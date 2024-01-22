@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_bankingsystem.mapper.TbuserMapper">
+<!--    pk를 parameter로 받아서 Tbuser에 대한 전체 정보 주기-->
+    <select id="detail" parameterType="hashMap" resultType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserSelectDto">
+        SELECT tbuser.id
+             , tbuser.uid
+             , tbuser.nick
+             , tbuser.sfrom
+             , tbuser.name
+             , tbuser.process
+             , tbuser.phone
+             , tbuser.mpic
+             , tbuser.deleted
+             , tbuser.created_at
+             , tbuser.modified_at
+        FROM tbuser
+        WHERE tbuser.id = #{id}
+    </select>
+
+<!--    TbuserListDto를 받아서 TbuserSelectDto로 넘기기 -->
+<!--    TbuserListDto는 uid, nick, process, name, phone, delete만 가지고 있는데.. 해당하는것만 보내는거?* 작은걸 받아서 큰걸 보여주는게 가능하나?-->
+    <select id="list" parameterType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserListDto"
+            resultType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserSelectDto">
+        SELECT tbuser.id
+        ,tbuser.uid
+        ,tbuser.nick
+        ,tbuser.sfrom
+        ,tbuser.name
+        ,tbuser.process
+        ,tbuser.phone
+        ,tbuser.mpic
+        ,tbuser.deleted
+        ,tbuser.created_at
+        ,tbuser.modified_at
+        FROM tbuser
+        WHERE tbuser.id is not null
+        <if test="uid != null and uid !=''">AND tbuser.uid LIKE CONCAT('%', #{uid}, '%')</if>
+        <if test="nick != null and nick !=''">AND tbuser.nick LIKE CONCAT('%', #{nick}, '%')</if>
+        <if test="name != null and name !=''">AND tbuser.name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="phone != null and phone !=''">AND tbuser.phone LIKE CONCAT('%', #{phone})</if>
+        <if test="process != null and process !=''">AND tbuser.process = #{process}</if>
+        <if test="deleted != null and deleted !=''">AND tbuser.deleted = #{deleted}</if>
+    </select>
+
+
+<!--  TbuserMoreListDto를 받아서 TbuserSelectDto로 전달  -->
+<!--    TbuserMoreListDto는 스크롤 방식으로 보여줄 건데.. 그래서 uid,nick, process, name, phone, delete 밖에 없는데-->
+    <select id="moreList" parameterType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserMoreListDto"
+            resultType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserSelectDto">
+        SELECT tbuser.id
+        ,,tbuser.uid
+        ,tbuser.nick
+        ,tbuser.sfrom
+        ,tbuser.name
+        ,tbuser.process
+        ,tbuser.phone
+        ,tbuser.mpic
+        ,tbuser.deleted
+        ,tbuser.created_at
+        ,tbuser.modified_at
+        FROM tbuser
+        WHERE tbuser.id is not null
+        <if test="uid != null and uid !=''">AND tbuser.uid LIKE CONCAT('%', #{uid}, '%')</if>
+        <if test="nick != null and nick !=''">AND tbuser.nick LIKE CONCAT('%', #{nick}, '%')</if>
+        <if test="name != null and name !=''">AND tbuser.name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="phone != null and phone !=''">AND tbuser.phone LIKE CONCAT('%', #{phone})</if>
+        <if test="process != null and process !=''">AND tbuser.process = #{process}</if>
+        <if test="deleted != null and deleted !=''">AND tbuser.deleted = #{deleted}</if>
+        <if test="cdatetime != null and cdatetime !=''">
+            <if test="cway =='before'">AND STR_TO_DATE(#{cdatetime}, '%Y-%m-%d %H:%i:%s.%f') > tbuser.created_at ORDER
+                BY tbuser.created_at DESC
+            </if>
+            <if test="cway =='recent'">AND tbuser.created_at > STR_TO_DATE(#{cdatetime}, '%Y-%m-%d %H:%i:%s.%f') ORDER
+                BY tbuser.created_at ASC
+            </if>
+        </if>
+        LIMIT 0, #{permore}
+    </select>
+
+<!--    TbuserPagedListDto를 받아서 TbuserSelectDto로 전달 -->
+<!--   TbuserPagedListDto는 uid, nick, process, name, phone, deleted 가 있다. -->
+<!--    여기서 callpage와 perpage만 불렀다? 원래 offset과 perpage였나?-->
+    <select id="pagedList" parameterType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserPagedListDto"
+            resultType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserSelectDto">
+        SELECT tbuser.id
+        ,tbuser.uid
+        ,tbuser.nick
+        ,tbuser.sfrom
+        ,tbuser.name
+        ,tbuser.process
+        ,tbuser.phone
+        ,tbuser.mpic
+        ,tbuser.deleted
+        ,tbuser.created_at
+        ,tbuser.modified_at
+        FROM tbuser
+        WHERE tbuser.id is not null
+        <if test="uid != null and uid !=''">AND tbuser.uid LIKE CONCAT('%', #{uid}, '%')</if>
+        <if test="nick != null and nick !=''">AND tbuser.nick LIKE CONCAT('%', #{nick}, '%')</if>
+        <if test="name != null and name !=''">AND tbuser.name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="phone != null and phone !=''">AND tbuser.phone LIKE CONCAT('%', #{phone})</if>
+        <if test="process != null and process !=''">AND tbuser.process = #{process}</if>
+        <if test="deleted != null and deleted !=''">AND tbuser.deleted = #{deleted}</if>
+        <if test="orderby =='created_at'">ORDER BY tbuser.created_at</if>
+        <if test="orderby =='title'">ORDER BY tbuser.title</if>
+        <if test="orderway =='asc'">ASC</if>
+        <if test="orderway =='desc'">DESC</if>
+        LIMIT #{callpage}, #{perpage}
+    </select>
+
+
+<!--  TbuserPagedListDto를 받아서 interger(list size)로 전달  -->
+    <select id="pagedListCount" parameterType="com.example.spring_bankingsystem.dto.TbuserDto$TbuserPagedListDto" resultType="Integer">
+        SELECT count(tbuser.id) as listsize
+        FROM tbuser
+        WHERE tbuser.id is not null
+        <if test="uid != null and uid !=''">AND tbuser.uid LIKE CONCAT('%', #{uid}, '%')</if>
+        <if test="nick != null and nick !=''">AND tbuser.nick LIKE CONCAT('%', #{nick}, '%')</if>
+        <if test="name != null and name !=''">AND tbuser.name LIKE CONCAT('%', #{name}, '%')</if>
+        <if test="phone != null and phone !=''">AND tbuser.phone LIKE CONCAT('%', #{phone})</if>
+        <if test="process != null and process !=''">AND tbuser.process = #{process}</if>
+        <if test="deleted != null and deleted !=''">AND tbuser.deleted = #{deleted}</if>
+    </select>
+
+</mapper>
