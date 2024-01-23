@@ -38,6 +38,8 @@ public class TbboardRestController {
     )
     @PostMapping("")
     public ResponseEntity<TbboardDto.TbboardAfterCreateDto> save(@Valid @RequestBody TbboardDto.TbboardCreateDto params, HttpServletRequest req) {
+        //interceptor와 양방향 소통이 가능하다.
+
         logger.info("!! : " + req.getAttribute("test_req"));
         return ResponseEntity.status(HttpStatus.CREATED).body(tbboardService.create(params));
     }

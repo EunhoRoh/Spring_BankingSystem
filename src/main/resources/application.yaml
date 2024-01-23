@@ -20,7 +20,7 @@ spring:
     properties:
       hibernate.format_sql: true
       hibernate.default_batch_fetch_size: 100
-      hibernate.jdbc.time_zone: UTC
+      hibernate.jdbc.time_zone: Asia/Seoul
   thymeleaf:
     cache: false
   devtools:
@@ -29,7 +29,7 @@ spring:
     remote:
       restart:
         freemarker:
-sql.init.mode: always
+  sql.init.mode: always
 springdoc:
   swagger-ui:
     operations-sorter: alpha
